@@ -18,14 +18,15 @@ import (
 )
 
 func main() {
-	seed := flag.Bool("seed", false, "Run database seeder")
+	// seed := flag.Bool("seed", false, "Run database seeder")
+	seed := viper.GetBool("seed")
 	flag.Parse()
 	config.Initiator()
 	logger.Initiator()
 	connection.InitDB()
 	migration.AutoMigrate()
 	// Jalankan seeding jika flag --seed digunakan
-	if *seed {
+	if seed {
 		fmt.Println("Seeding database...")
 		seeders.SeedAll(connection.DB)
 		return // Hentikan aplikasi setelah seeding
