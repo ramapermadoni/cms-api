@@ -232,7 +232,7 @@ func addBaseURLIfMissing(filePath string) string {
 	if err != nil || (filePath[:4] != "http" && filePath[:5] != "https") {
 		// Remove leading "./" if present
 		filePath = strings.TrimPrefix(filePath, "./")
-		return baseURL + "/" + filePath // Add base URL
+		return baseURL + filePath // Add base URL
 	}
 	return filePath // Return the original file path if it's valid
 }
