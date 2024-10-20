@@ -26,7 +26,7 @@
             }
         }
     },
-    "seed": true,
+    "seed": false,
     "chat_gpt": {
         "app_key": ""
     },
