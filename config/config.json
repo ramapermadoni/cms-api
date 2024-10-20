@@ -1,0 +1,39 @@
+{
+    "name": "Enterprise Project",
+    "app": {
+        "mode": "debug",
+        "base_url": "localhost",
+        "port": ":8080"
+    },
+    "base_url": "http://localhost:8080",
+    "migration": {
+        "db": {
+            "mysql": {
+                "db_host": "localhost",
+                "db_port": 3307,
+                "db_name": "go_enterprise",
+                "db_user": "admin",
+                "db_password": "d8K3cqVSHTPWHG",
+                "db_engine": "mysql"
+            },
+            "postgres": {
+                "db_host": "localhost",
+                "db_port": 5432,
+                "db_name": "cms-api",
+                "db_user": "postgres",
+                "db_password": "password",
+                "db_engine": "postgres"
+            }
+        }
+    },
+    "chat_gpt": {
+        "app_key": ""
+    },
+    "jwt_secret_key": "9wBhsNnwtq0AFs30V6B90KTDsAQ2oFW1VWcDpNVQ",
+    "storage": {
+        "log": {
+            "error": "log/error",
+            "panic": "log/panic"
+        }
+    }
+}
