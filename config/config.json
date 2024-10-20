@@ -5,7 +5,7 @@
         "base_url": "localhost",
         "port": ":8080"
     },
-    "base_url": "http://localhost:8080",
+    "base_url": "https://cms-api-production-6d2c.up.railway.app/",
     "migration": {
         "db": {
             "mysql": {
