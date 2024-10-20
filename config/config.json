@@ -5,7 +5,7 @@
         "base_url": "localhost",
         "port": ":8080"
     },
-    "base_url": "https://cms-api-production-6d2c.up.railway.app/",
+    "base_url": "http://localhost:8080",
     "migration": {
         "db": {
             "mysql": {
@@ -17,11 +17,11 @@
                 "db_engine": "mysql"
             },
             "postgres": {
-                "db_host": "postgres.railway.internal",
+                "db_host": "localhost",
                 "db_port": 5432,
-                "db_name": "railway",
+                "db_name": "cms-api",
                 "db_user": "postgres",
-                "db_password": "wZBjiRQywKuJqWatQAhSmnygOUNFTUZP",
+                "db_password": "password",
                 "db_engine": "postgres"
             }
         }
