@@ -115,7 +115,7 @@ CMS API Gateway adalah solusi open-source yang mempermudah pengelolaan dan pengi
 
 
 
-## **Deskripsi Role dan Hak Akses pada Sistem CMS***
+## **Deskripsi Role dan Hak Akses pada Sistem CMS**
 ### 1. **Admin**  
 - **Deskripsi:** Pengguna dengan hak akses tertinggi di sistem.  
 - **Hak Akses:**  
