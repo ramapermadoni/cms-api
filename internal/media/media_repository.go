@@ -61,7 +61,7 @@ func (r *mediaRepository) InsertMedia(media *Media) error {
 }
 
 func (r *mediaRepository) UpdateMedia(media Media) error {
-	return r.db.Save(&media).Error
+	return r.db.Debug().Model(&Media{}).Where("id = ?", media.ID).Updates(media).Error
 }
 
 func (r *mediaRepository) DeleteMedia(media Media) error {

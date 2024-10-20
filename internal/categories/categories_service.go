@@ -109,7 +109,7 @@ func (s *categoryService) UpdateCategoryService(ctx *gin.Context) (Category, err
 	if !ok || username == "" {
 		return Category{}, errors.New("username not found in context")
 	}
-
+	category.ID = existingCategory.ID
 	category.CreatedBy = existingCategory.CreatedBy
 	category.CreatedAt = existingCategory.CreatedAt
 	// Set Modified field

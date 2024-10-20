@@ -67,7 +67,7 @@ func (r *categoryRepository) InsertCategory(category *Category) error {
 }
 
 func (r *categoryRepository) UpdateCategory(category Category) error {
-	return r.db.Save(&category).Error
+	return r.db.Debug().Model(&Category{}).Where("id = ?", category.ID).Updates(category).Error
 }
 
 func (r *categoryRepository) DeleteCategory(category Category) error {

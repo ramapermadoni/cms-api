@@ -67,7 +67,7 @@ func (r *userRepository) InsertUser(user *User) error {
 }
 
 func (r *userRepository) UpdateUser(user User) error {
-	return r.db.Save(&user).Error
+	return r.db.Debug().Model(&User{}).Where("id = ?", user.ID).Updates(user).Error
 }
 
 // func (r *userRepository) DeleteUser(user User) error {

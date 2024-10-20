@@ -138,7 +138,7 @@ func (s *userService) UpdateUserService(ctx *gin.Context) (User, error) {
 	if !ok || username == "" {
 		return User{}, errors.New("username not found in context")
 	}
-
+	user.ID = existingUser.ID
 	user.CreatedBy = existingUser.CreatedBy
 	user.CreatedAt = existingUser.CreatedAt
 	user.ModifiedBy = username

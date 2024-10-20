@@ -68,7 +68,7 @@ func (r *postRepository) InsertPost(post *Post) error {
 }
 
 func (r *postRepository) UpdatePost(post Post) error {
-	return r.db.Save(&post).Error
+	return r.db.Debug().Model(&Post{}).Where("id = ?", post.ID).Updates(post).Error
 }
 
 func (r *postRepository) DeletePost(post Post) error {
