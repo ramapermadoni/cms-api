@@ -47,6 +47,15 @@ func InitiateRouter() {
 
 	router := gin.Default()
 
+	// Route default untuk root ("/")
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message":       "Welcome to CMS API!",
+			"repository":    "https://github.com/ramapermadoni/cms-api",
+			"readme":        "https://github.com/ramapermadoni/cms-api/#readme",
+			"documentation": "https://documenter.getpostman.com/view/15292179/2sAXxY2T1J",
+		})
+	})
 	users.Initiator(router)
 	users.AuthInitiator(router)
 	categories.Initiator(router)
