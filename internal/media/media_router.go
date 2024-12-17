@@ -33,14 +33,14 @@ func GetAllMediaRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)
 	svc := NewMediaService(repo)
 
-	media, total, err := svc.GetAllMediaService(ctx)
+	media, total, page, limit, err := svc.GetAllMediaService(ctx)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
 	}
 
 	// data := gin.H{"total": total, "data": media}
-	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all media data", total, media)
+	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all media data", total, media, page, limit)
 }
 func GetMediaRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)

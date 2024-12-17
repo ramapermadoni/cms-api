@@ -7,6 +7,8 @@ import (
 	"errors"
 	"net/http"
 
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"
@@ -16,6 +18,12 @@ import (
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+type TokenResponse struct {
+	AccessToken         string `json:"access_token"`
+	RefreshToken        string `json:"refresh_token"`
+	ExpiredAccessToken  int64  `json:"expired_access_token"`
+	ExpiredRefreshToken int64  `json:"expired_refresh_token"`
 }
 
 // Login authenticates the user
@@ -33,18 +41,32 @@ func Login(c *gin.Context) {
 	}
 
 	// Generate tokens if user is valid
-	accessToken, err := common.GenerateAccessToken(user.Username, user.Role) // Use user's role
+	accessTokenExpiration := time.Now().Add(15 * time.Minute)
+	accessToken, err := common.GenerateAccessToken(user.Username, user.Role, user.ID) // Use user's role
 	if err != nil {
 		common.GenerateErrorResponse(c, "Could not create access token")
 		return
 	}
-	refreshToken, err := common.GenerateRefreshToken(user.Username, user.Role) // Use user's role
+	refreshTokenExpiration := time.Now().Add(7 * 24 * time.Hour)
+	refreshToken, err := common.GenerateRefreshToken(user.Username, user.Role, user.ID) // Use user's role
 	if err != nil {
 		common.GenerateErrorResponse(c, "Could not create refresh token")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token": accessToken, "refresh_token": refreshToken})
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"access_token":          accessToken,
+	// 	"refresh_token":         refreshToken,
+	// 	"expired_access_token":  accessTokenExpiration.Unix(),
+	// 	"expired_refresh_token": refreshTokenExpiration.Unix(),
+	// })
+	c.JSON(http.StatusOK, TokenResponse{
+		AccessToken:         accessToken,
+		RefreshToken:        refreshToken,
+		ExpiredAccessToken:  accessTokenExpiration.Unix(),
+		ExpiredRefreshToken: refreshTokenExpiration.Unix(),
+	})
+
 }
 
 // RefreshToken updates the access token
@@ -72,18 +94,32 @@ func RefreshToken(c *gin.Context) {
 	}
 
 	// Create a new access token
-	accessToken, err := common.GenerateAccessToken(claims.Username, claims.Role)
+	accessTokenExpiration := time.Now().Add(15 * time.Minute)
+	accessToken, err := common.GenerateAccessToken(claims.Username, claims.Role, claims.ID)
 	if err != nil {
 		common.GenerateErrorResponse(c, "Could not create access token")
 		return
 	}
-	refreshToken, err := common.GenerateRefreshToken(claims.Username, claims.Role)
+	refreshTokenExpiration := time.Now().Add(7 * 24 * time.Hour)
+	refreshToken, err := common.GenerateRefreshToken(claims.Username, claims.Role, claims.ID)
 	if err != nil {
 		common.GenerateErrorResponse(c, "Could not create refresh token")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token": accessToken, "refresh_token": refreshToken})
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"access_token":          accessToken,
+	// 	"refresh_token":         refreshToken,
+	// 	"expired_access_token":  accessTokenExpiration.Unix(),
+	// 	"expired_refresh_token": refreshTokenExpiration.Unix(),
+	// })
+	c.JSON(http.StatusOK, TokenResponse{
+		AccessToken:         accessToken,
+		RefreshToken:        refreshToken,
+		ExpiredAccessToken:  accessTokenExpiration.Unix(),
+		ExpiredRefreshToken: refreshTokenExpiration.Unix(),
+	})
+
 }
 func isValidUser(ctx *gin.Context, username, password string) (models.User, bool) {
 	var user models.User

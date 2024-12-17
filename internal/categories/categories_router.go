@@ -32,14 +32,14 @@ func GetAllCategoryRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)
 	svc := NewCategoryService(repo)
 
-	category, total, err := svc.GetAllCategoryService(ctx)
+	category, total, page, limit, err := svc.GetAllCategoryService(ctx)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
 	}
 
 	// data := gin.H{"total": total, "data": category}
-	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all category data", total, category)
+	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all category data", total, category, page, limit)
 }
 func GetCategoryRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)

@@ -12,7 +12,9 @@ import (
 	"cms-api/seeders"
 	"flag"
 	"fmt"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
@@ -47,6 +49,29 @@ func InitiateRouter() {
 
 	router := gin.Default()
 
+	// Configure CORS
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://192.168.180.27:3000", // Origin untuk Next.js development
+			"http://localhost:3000",      // Origin lain untuk local development
+			"https://yourproduction.com", // Origin untuk production
+		}, // or "*" for all origins
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// // Configure CORS
+	// router.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"http://localhost:3000"}, // or "*" for all origins
+	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+	// 	AllowHeaders:     []string{"Content-Type", "Authorization"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// 	MaxAge:           12 * time.Hour,
+	// }))
 	// Route default untuk root ("/")
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{

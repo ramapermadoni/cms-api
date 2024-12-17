@@ -22,8 +22,9 @@ func Initiator(router *gin.Engine) {
 		api.POST("", middlewares.RoleMiddleware("admin"), CreateUserRouter) // Create
 
 		// Rute untuk membaca data user (semua role)
-		api.GET("", middlewares.RoleMiddleware("admin"), GetAllUserRouter)  // Read (List)
-		api.GET("/:id", middlewares.RoleMiddleware("admin"), GetUserRouter) // Read (By ID)
+		api.GET("", middlewares.RoleMiddleware("admin"), GetAllUserRouter)                                       // Read (List)
+		api.GET("/profile", middlewares.RoleMiddleware("admin", "editor", "author", "member"), GetProfileRouter) // Read (By ID)
+		api.GET("/:id", middlewares.RoleMiddleware("admin"), GetUserRouter)                                      // Read (By ID)
 
 		// Rute untuk mengubah user (hanya admin)
 		api.PUT("/:id", middlewares.RoleMiddleware("admin"), UpdateUserRouter) // Update
@@ -40,20 +41,31 @@ func GetAllUserRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)
 	svc := NewUserService(repo)
 
-	user, total, err := svc.GetAllUserService(ctx)
+	users, total, page, limit, err := svc.GetAllUserService(ctx)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
 	}
 
-	// data := gin.H{"total": total, "data": user}
-	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all user data", total, user)
+	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all user data", total, users, page, limit)
 }
+
 func GetUserRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)
 	svc := NewUserService(repo)
 
 	user, err := svc.GetUserByIDService(ctx)
+	if err != nil {
+		common.GenerateErrorResponse(ctx, err.Error())
+		return
+	}
+	common.GenerateSuccessResponseWithData(ctx, "successfully retrieved user data", user)
+}
+func GetProfileRouter(ctx *gin.Context) {
+	repo := NewRepository(connection.DB)
+	svc := NewUserService(repo)
+
+	user, err := svc.GetProfileByIDService(ctx)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return

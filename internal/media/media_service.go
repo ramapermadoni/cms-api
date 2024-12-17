@@ -15,7 +15,7 @@ import (
 )
 
 type MediaService interface {
-	GetAllMediaService(ctx *gin.Context) ([]Media, int64, error)
+	GetAllMediaService(ctx *gin.Context) ([]Media, int64, int, int, error)
 	GetMediaByIDService(ctx *gin.Context) (Media, error)
 	CreateMediaService(ctx *gin.Context) (Media, error)
 	UpdateMediaService(ctx *gin.Context) (Media, error)
@@ -35,21 +35,21 @@ func NewMediaService(repo Repository) MediaService {
 }
 
 // GetAllMediaService retrieves all media with pagination and search
-func (s *mediaService) GetAllMediaService(ctx *gin.Context) ([]Media, int64, error) {
+func (s *mediaService) GetAllMediaService(ctx *gin.Context) ([]Media, int64, int, int, error) {
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	search := ctx.Query("search")
 
 	medias, total, err := s.repo.SelectAllMedia(page, limit, search)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
 	// Add base URL to FilePath if it's not a valid URL
 	for i := range medias {
 		medias[i].FilePath = addBaseURLIfMissing(medias[i].FilePath)
 	}
-	return medias, total, nil
+	return medias, total, page, limit, nil
 }
 func (s *mediaService) GetMediaByIDService(ctx *gin.Context) (Media, error) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)

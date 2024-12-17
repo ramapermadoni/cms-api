@@ -13,8 +13,9 @@ import (
 )
 
 type UserService interface {
-	GetAllUserService(ctx *gin.Context) ([]User, int64, error)
+	GetAllUserService(ctx *gin.Context) ([]User, int64, int, int, error)
 	GetUserByIDService(ctx *gin.Context) (User, error)
+	GetProfileByIDService(ctx *gin.Context) (User, error)
 	CreateUserService(ctx *gin.Context) (User, error)
 	UpdateUserService(ctx *gin.Context) (User, error)
 	DeleteUserService(ctx *gin.Context) error
@@ -33,7 +34,7 @@ func NewUserService(repo Repository) UserService {
 }
 
 // GetAllUserService retrieves all users with pagination and search
-func (s *userService) GetAllUserService(ctx *gin.Context) ([]User, int64, error) {
+func (s *userService) GetAllUserService(ctx *gin.Context) ([]User, int64, int, int, error) {
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	search := ctx.Query("search")
@@ -42,7 +43,7 @@ func (s *userService) GetAllUserService(ctx *gin.Context) ([]User, int64, error)
 	users, total, err := s.repo.SelectAllUser(page, limit, search, orderBy, sort)
 	if err != nil {
 		log.Printf("Error fetching users: %v", err)
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
 	if len(users) == 0 {
@@ -53,7 +54,7 @@ func (s *userService) GetAllUserService(ctx *gin.Context) ([]User, int64, error)
 		users[i].Password = "*****" // Mask password field
 	}
 
-	return users, total, nil
+	return users, total, page, limit, nil
 }
 
 func (s *userService) GetUserByIDService(ctx *gin.Context) (User, error) {
@@ -63,6 +64,40 @@ func (s *userService) GetUserByIDService(ctx *gin.Context) (User, error) {
 	}
 
 	user, err := s.repo.SelectUserByID(id)
+	user.Password = "*****" // Mask password field
+	if err != nil {
+		log.Printf("User not found with ID: %d", id)
+		return User{}, err
+	}
+
+	return user, nil
+}
+func (s *userService) GetProfileByIDService(ctx *gin.Context) (User, error) {
+	// Ambil id_user dari konteks yang di-set oleh JwtMiddleware
+	idUser, exists := ctx.Get("id_user")
+	if !exists {
+		log.Println("id_user not found in context")
+		return User{}, errors.New("id_user not found in context")
+	}
+
+	// Konversi idUser ke int64 jika awalnya berupa int atau jenis lain yang dapat dikonversi
+	var id int64
+	switch v := idUser.(type) {
+	case int:
+		id = int64(v)
+	case int64:
+		id = v
+	default:
+		log.Println("Invalid id_user type in context")
+		return User{}, errors.New("invalid id_user type in context")
+	}
+
+	log.Printf("Fetching profile for id_user: %d", id)
+
+	// Gunakan id untuk mengambil data user dari repository
+	user, err := s.repo.SelectUserByID(id)
+	user.Password = "*****" // Mask password field
+
 	if err != nil {
 		log.Printf("User not found with ID: %d", id)
 		return User{}, err

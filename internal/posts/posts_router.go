@@ -33,14 +33,14 @@ func GetAllPostRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)
 	svc := NewPostService(repo, media.NewRepository(connection.DB))
 
-	post, total, err := svc.GetAllPostService(ctx)
+	post, total, page, limit, err := svc.GetAllPostService(ctx)
 	if err != nil {
 		common.GenerateErrorResponse(ctx, err.Error())
 		return
 	}
 
 	// data := gin.H{"total": total, "data": post}
-	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all post data", total, post)
+	common.GenerateSuccessResponseWithListData(ctx, "successfully retrieved all post data", total, post, page, limit)
 }
 func GetPostRouter(ctx *gin.Context) {
 	repo := NewRepository(connection.DB)

@@ -12,7 +12,7 @@ import (
 )
 
 type PostService interface {
-	GetAllPostService(ctx *gin.Context) ([]Post, int64, error)
+	GetAllPostService(ctx *gin.Context) ([]Post, int64, int, int, error)
 	GetPostByIDService(ctx *gin.Context) (Post, error)
 	CreatePostService(ctx *gin.Context) (Post, error)
 	UpdatePostService(ctx *gin.Context) (Post, error)
@@ -37,7 +37,7 @@ func NewPostService(repo Repository, mediaRepo media.Repository) PostService {
 }
 
 // GetAllPostService retrieves all post with pagination and search
-func (s *postService) GetAllPostService(ctx *gin.Context) ([]Post, int64, error) {
+func (s *postService) GetAllPostService(ctx *gin.Context) ([]Post, int64, int, int, error) {
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	search := ctx.Query("search")
@@ -46,10 +46,10 @@ func (s *postService) GetAllPostService(ctx *gin.Context) ([]Post, int64, error)
 
 	posts, total, err := s.repo.SelectAllPost(page, limit, search, orderBy, sort)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
-	return posts, total, nil
+	return posts, total, page, limit, nil
 }
 func (s *postService) GetPostByIDService(ctx *gin.Context) (Post, error) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)

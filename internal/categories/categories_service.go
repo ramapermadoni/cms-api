@@ -10,7 +10,7 @@ import (
 )
 
 type CategoryService interface {
-	GetAllCategoryService(ctx *gin.Context) ([]Category, int64, error)
+	GetAllCategoryService(ctx *gin.Context) ([]Category, int64, int, int, error)
 	GetCategoryByIDService(ctx *gin.Context) (Category, error)
 	CreateCategoryService(ctx *gin.Context) (Category, error)
 	UpdateCategoryService(ctx *gin.Context) (Category, error)
@@ -29,7 +29,7 @@ func NewCategoryService(repo Repository) CategoryService {
 }
 
 // GetAllCategoryService retrieves all category with pagination and search
-func (s *categoryService) GetAllCategoryService(ctx *gin.Context) ([]Category, int64, error) {
+func (s *categoryService) GetAllCategoryService(ctx *gin.Context) ([]Category, int64, int, int, error) {
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	search := ctx.Query("search")
@@ -38,10 +38,10 @@ func (s *categoryService) GetAllCategoryService(ctx *gin.Context) ([]Category, i
 
 	categories, total, err := s.repo.SelectAllCategory(page, limit, search, orderBy, sort)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
 
-	return categories, total, nil
+	return categories, total, page, limit, nil
 }
 func (s *categoryService) GetCategoryByIDService(ctx *gin.Context) (Category, error) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)

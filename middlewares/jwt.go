@@ -13,12 +13,13 @@ import (
 )
 
 // AccessClaims for access token
-type AccessClaims struct {
-	Issuer   string `json:"iss"`
-	Username string `json:"username"`
-	Role     string `json:"role"` // Tambahkan field Role
-	jwt.RegisteredClaims
-}
+// type AccessClaims struct {
+// 	Issuer   string `json:"iss"`
+// 	ID       int    `json:"id"`
+// 	Username string `json:"username"`
+// 	Role     string `json:"role"` // Tambahkan field Role
+// 	jwt.RegisteredClaims
+// }
 
 // JwtMiddleware is a middleware for JWT authentication
 func JwtMiddleware() gin.HandlerFunc {
@@ -30,7 +31,7 @@ func JwtMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims := &AccessClaims{}
+		claims := &common.AccessClaims{}
 		tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, errors.New("invalid signing method")
@@ -58,8 +59,10 @@ func JwtMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		c.Set("id_user", claims.ID)
 		c.Set("username", claims.Username)
 		c.Set("role", claims.Role) // Simpan role ke context
+		log.Printf("User id_user set in context: %d", claims.ID)
 		log.Printf("User username set in context: %s", claims.Username)
 		log.Printf("User role set in context: %s", claims.Role)
 		c.Next()
@@ -83,7 +86,7 @@ func GetJwtTokenFromHeader(c *gin.Context) (string, error) {
 
 // isAccessToken checks if the provided token is an access token
 func isAccessToken(token string) bool {
-	claims := &AccessClaims{}
+	claims := &common.AccessClaims{}
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(viper.GetString("jwt_secret_key")), nil
 	})

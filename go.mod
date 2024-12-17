@@ -15,6 +15,7 @@ require (
 require github.com/google/uuid v1.6.0
 
 require (
+	github.com/gin-contrib/cors v1.7.2
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 )
